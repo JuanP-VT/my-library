@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const bcrypt_1 = __importDefault(require("bcrypt"));
 const userSchema_1 = require("./schema/userSchema");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -33,6 +34,16 @@ app.post('/users', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             res.json({ message: 'Username Already Exist' });
             return;
         }
+        // Hash password
+        const hashedPass = yield bcrypt_1.default.hash(req.body.password, 10);
+        // create new user in DB
+        const user = new userSchema_1.User({
+            name: req.body.name,
+            email: req.body.email,
+            password: hashedPass,
+        });
+        user.save();
+        res.json(user);
     }
     catch (_a) {
         res.status(500).send('');
