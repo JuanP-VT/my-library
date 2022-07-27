@@ -22,11 +22,18 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json());
 mongoose_1.default.connect(`mongodb+srv://admin:${process.env.mongo_pass}@cluster0.thrkg.mongodb.net/?retryWrites=true&w=majority`, () => {
     console.log('Connected to Database');
+    app.listen(5000, () => {
+        console.log('App is listening');
+    });
 });
 // Register New User Endpoint
 app.post('/users', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Return error if username already exist
+        // Check if username is valid
+        if (req.body.name === '' || req.body.name === null || req.body.name === undefined) {
+            res.json({ message: 'Name field must be submmited' });
+        }
+        // Return error message if username already exist
         // Search for username in the Database
         const findUser = yield userSchema_1.User.find({ name: req.body.name });
         // If username is in database return error message
@@ -46,7 +53,6 @@ app.post('/users', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         res.json(user);
     }
     catch (_a) {
-        res.status(500).send('');
+        res.status(500).send();
     }
 }));
-app.listen(5000);
