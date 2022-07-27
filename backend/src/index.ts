@@ -20,11 +20,15 @@ mongoose.connect(
 // Register New User Endpoint
 app.post('/users', async (req, res) => {
   try {
-    // Check if username is valid
+    // Check if request Name is not empty
     if (req.body.name === '' || req.body.name === null || req.body.name === undefined) {
-      res.json({ message: 'Name field must be submmited' });
+      return res.json({ message: 'Name field must be submitted' });
     }
-    // Return error message if username already exist
+    // Check if request password is more than 4 characters
+    if (req.body.password.length <= 4) {
+      return res.json({ message: 'Password must be longer than 4 characters' });
+    }
+    // Return error message if username already exist in Database
     // Search for username in the Database
     const findUser = await User.find({ name: req.body.name });
     // If username is in database return error message
